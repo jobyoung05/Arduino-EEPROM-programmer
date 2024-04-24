@@ -8,13 +8,17 @@
 #define WRITE_BUTTON A1
 #define READ_BUTTON A2
 
-#define MAX_ADDR 0x8FFF
+#define MAX_ADDR 0x7FFF
+
+byte data[10] = {0xF0, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF, 0xF0, 0xF1, 0xF8, 0xF9};
+
+bool flag = true;
 
 
 void pushAddress(int address){
   /* int is always a 16-bit value, shiftOut takes a byte
      so we use shifts to get the low and high byte individually*/
-  shiftOut(SERIAL, SRCLK, MSBFIRST, byte(address >> 8);
+  shiftOut(SERIAL, SRCLK, MSBFIRST, byte(address >> 8));
   shiftOut(SERIAL, SRCLK, MSBFIRST, byte(address));
 
 
@@ -24,6 +28,27 @@ void pushAddress(int address){
   digitalWrite(RCLK, LOW);
   digitalWrite(RCLK, HIGH);
   digitalWrite(RCLK, LOW);
+}
+
+
+void write(int addr, byte data){
+  pushAddress(addr);
+  digitalWrite(OE, HIGH);
+
+  for (int i = EEPROM_LSB; i <= EEPROM_MSB; i++){
+    pinMode(i, OUTPUT);
+    digitalWrite(i, data & 1);
+    data = data >> 1;
+  }
+
+  digitalWrite(WE, LOW);
+  delayMicroseconds(1);
+  digitalWrite(WE, HIGH);
+
+  // making use of AT28C256 toggle bit to detect cycle completion
+  
+  delay(10);
+
 }
 
 
@@ -37,18 +62,30 @@ byte read(int addr){
 
   byte result;
 
-  for (int i == EEPROM_MSB; i >= EEPROM_LSB; i--){
+  for (int i = EEPROM_MSB; i >= EEPROM_LSB; i--){
     pinMode(i, INPUT);
-    result <<;
+    result = result << 1;
     result += digitalRead(i);
   }
+
+  return result;
 
 }
 
 
 void printAll(){
-  for (int i = 0; i <= MAX_ADDR; i++){
-    
+  int lineSize = 32;
+  char addressCode[6];
+  char hexByte[2];
+
+  for (int i = 0; i <= MAX_ADDR; i += lineSize){
+    sprintf(addressCode, "0x%06X   ", i);
+    Serial.print(addressCode);
+    for (int j = 0; j < lineSize; j++){
+      sprintf(hexByte, "%02X  ", read(i+j));
+      Serial.print(hexByte);
+    }
+    Serial.print("\n");
   }
 }
 
@@ -70,7 +107,7 @@ void setup() {
   pinMode(WRITE_BUTTON, INPUT);
   pinMode(READ_BUTTON, INPUT);
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
 
   
@@ -80,9 +117,22 @@ void setup() {
 void loop() {
   
   if (digitalRead(READ_BUTTON)){
-    Serial.println("READING EEPROM...")
+    Serial.println("READING EEPROM...");
+    printAll();
+  }
 
+  if (digitalRead(WRITE_BUTTON) & flag){
+    Serial.println("WRITING EEPROM...");
+    for (int i = 0; i <= MAX_ADDR; i++){
+      write(i, 0x00);
+      if ((i & 0x0F) == 0x0F){
+        Serial.println(i, HEX);
+      }
+    }
+    Serial.println("WRITE COMPLETE");
+    flag = false;
 
   }
+
 
 }
