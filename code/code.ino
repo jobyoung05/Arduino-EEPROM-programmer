@@ -47,7 +47,7 @@ void write(int addr, byte data){
 
   // making use of AT28C256 toggle bit to detect cycle completion
   
-  delay(10);
+  delay(5);
 
 }
 
@@ -79,7 +79,8 @@ void printAll(){
   char hexByte[2];
 
   for (int i = 0; i <= MAX_ADDR; i += lineSize){
-    sprintf(addressCode, "0x%06X   ", i);
+    sprintf(addressCode, "0x%04X   ", i);
+    Serial.println(i);
     Serial.print(addressCode);
     for (int j = 0; j < lineSize; j++){
       sprintf(hexByte, "%02X  ", read(i+j));
@@ -124,9 +125,9 @@ void loop() {
   if (digitalRead(WRITE_BUTTON) & flag){
     Serial.println("WRITING EEPROM...");
     for (int i = 0; i <= MAX_ADDR; i++){
-      write(i, 0x00);
-      if ((i & 0x0F) == 0x0F){
-        Serial.println(i, HEX);
+      write(i, 0xEA);
+      if (i%4096 == 0){
+        Serial.print("#");
       }
     }
     Serial.println("WRITE COMPLETE");
