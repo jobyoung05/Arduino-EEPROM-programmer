@@ -6,7 +6,7 @@
 ![Arduino EEPROM Programmer Schematic](https://github.com/user-attachments/assets/4357a42c-eaa6-497b-863d-a2148017b4af)
 
 This is how I wired the Arduino up with the shift registers and the EEPROM chip. It looks very confusing but most of that is just the data and address buses, which follow a very logical pin mapping. I've explained these in writing which is probably easier to understand than the schematic:
- * Pins D9-D2 of the Arduino are connected to pins IO7-IO0 of the EEPROM
+ * Pins D2-D9 of the Arduino are connected to pins IO0-IO7 of the EEPROM
  * Pins QA-QH of the first shift register (U2) are connected to pins A0-A7 of the EEPROM
  * Pins QA-QG of the second shift register (U3) are connected to pins A8-A14 of the EEPROM
 
