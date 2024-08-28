@@ -13,5 +13,5 @@ This is how I wired the Arduino up with the shift registers and the EEPROM chip.
 Once you've wired those up, the rest is fairly simple. Just follow the schematic to fill in the gaps.
 
 ## Code
-code.ino contains all you need to program the EEPROM. So far, it is only possible to define the programmed data by defining a byte array within the program itself. I am working on a version that automatically reads and uploads a .bin file when the arduino gets flashed.
+code.ino contains all you need to program the EEPROM. So far, it is only possible to define the programmed data by defining a byte array within the program itself. I am working on a tool that allows a 32KiB to be uploaded to the EEPROM via a serial interface with the arduino.
 
