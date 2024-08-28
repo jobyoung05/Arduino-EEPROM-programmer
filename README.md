@@ -1,5 +1,7 @@
 # Arduino EEPROM programmer
  Program a AT28C256P with an Arduino Uno and a couple of SN74HC595N Shift Register ICs
+ 
+ This project (including code and schematic) is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 ## Wiring
 ![Arduino EEPROM Programmer Schematic](https://github.com/user-attachments/assets/4357a42c-eaa6-497b-863d-a2148017b4af)
 
