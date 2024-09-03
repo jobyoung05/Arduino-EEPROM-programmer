@@ -21,3 +21,4 @@ code.ino contains all you need to program the EEPROM. So far, it is only possibl
 * Change DEFAULT_VALUE to the value you wish to be programmed into all addresses beyond the size of DATA[].
 * Change READ_LINE_WIDTH to specify how many bytes are printed per line to the serial monitor when reading the EEPROM.
 
+Once you've made all the changes to the code, upload it to the arduino, open up the serial monitor and press either the write button or the read button. 
