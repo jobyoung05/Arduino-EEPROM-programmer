@@ -13,5 +13,11 @@ This is how I wired the Arduino up with the shift registers and the EEPROM chip.
 Once you've wired those up, the rest is fairly simple. Just follow the schematic to fill in the gaps.
 
 ## Code
+### Current limitations
 code.ino contains all you need to program the EEPROM. So far, it is only possible to define the programmed data by defining a byte array within the program itself. I am working on a tool that allows a 32KiB to be uploaded to the EEPROM via a serial interface with the arduino.
+
+### Usage
+Change DATA[] to contain the data to be programmed into the EEPROM. DATA[0] will be programmed into address 0, and so on.
+Change DEFAULT_VALUE to the value you wish to be programmed into all addresses beyond the size of DATA[].
+Change READ_LINE_WIDTH to specify how many bytes are printed per line to the serial monitor when reading the EEPROM.
 
