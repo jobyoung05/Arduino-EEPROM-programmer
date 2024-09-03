@@ -84,23 +84,22 @@ def openCOMPort(portName):
         _type_: _description_
     """
     try:
-        portObject = serial.Serial(portName, 19200)
-        portObject.timeout = 5
+        arduino = serial.Serial(port='COM5',  baudrate=115200, timeout=.5)
     except Exception as e:
         print("Error opening COM port. Quitting...")
         print(e)
         sys.exit(1)
         
-    return portObject
+    return arduino
 
 
-def establishConnection(portObject):
-    portObject.flushInput()
-    portObject.flushOutput()
-    portObject.write(bytes([0xFF]))
-    time.sleep(.1)
+def establishConnection():
+    arduino = serial.Serial(port='COM5',  baudrate=115200, timeout=.5)
+    time.sleep(.05)
+    arduino.write(bytes([255]))
+    time.sleep(.05)
+    resp = arduino.read(1)
     try:
-        resp = portObject.read(1)
         print(resp)
         if len(resp) != 1:
             raise TimeoutError()
@@ -111,11 +110,11 @@ def establishConnection(portObject):
             return True
     except TimeoutError:
         print("Timeout reached waiting for response. Please restart the arduino and try again. Quitting...")
-        portObject.close()
+        arduino.close()
         sys.exit(1)
     except ValueError:
         print("Incorrect response recieved. Please restart the arduino and try again. Quitting...")
-        portObject.close()
+        arduino.close()
         sys.exit(1)
     
 
@@ -131,10 +130,10 @@ def main():
         elif sys.argv[1].endswith(".bin"):
             dataBlocks = readBinary(sys.argv[1])
             selectedPort = chooseCOMPort()
-            portObject = openCOMPort(selectedPort)
-            establishConnection(portObject)
-            sendBlocks(portObject, dataBlocks)
-            portObject.close()
+            #arduino = openCOMPort(selectedPort)
+            establishConnection()
+            #sendBlocks(arduino, dataBlocks)
+            #arduino.close()
             
                 
             

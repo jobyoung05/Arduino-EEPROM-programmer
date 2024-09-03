@@ -29,14 +29,23 @@ const int READ_BUTTON = A2;
 
 const int MAX_ADDR = 0x7FFF;
 
-byte data[10] = {0xF0, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF, 0xF0, 0xF1, 0xF8, 0xF9};
+// Value that will fill leftover addresses
+const int DEFAULT_VALUE = 0xEA;
 
-bool flag = true;
+/* Change this array to whatever you want to program the EEPROM with.
+   If you need to upload more than 10 bytes, simply make the array longer.
+   The program will compensate and fill any remaining addresses with DEFAULT_VALUE */
+const byte DATA[10] = {0xF0, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF, 0xF0, 0xF1, 0xF8, 0xF9};
+
+// Number of bytes displayed per line when reading the EEPROM
+const int READ_LINE_WIDTH = 32;
+
+
 
 
 void pushAddress(int address){
   /* int is always a 16-bit value, shiftOut takes a byte
-     so we use shifts to get the low and high byte individually*/
+     so we use shifts to get the low and high byte individually */
   shiftOut(SERIALOUT, SRCLK, MSBFIRST, byte(address >> 8));
   shiftOut(SERIALOUT, SRCLK, MSBFIRST, byte(address));
 
@@ -73,7 +82,7 @@ void write(int addr, byte data){
 
 byte read(int addr){
 
-  // ensure EEPROM is in read state
+  // Ensure EEPROM is in read state
   digitalWrite(OE, LOW);
   digitalWrite(WE, HIGH);
 
@@ -93,36 +102,38 @@ byte read(int addr){
 
 
 void printAll(){
-  int lineSize = 32;
-  char addressCode[6];
+  char addressCode[4];
   char hexByte[2];
 
-  for (long i = 0; i <= MAX_ADDR; i += lineSize){
+  // Print the contents of the EEPROM to the serial monitor
+  for (long i = 0; i <= MAX_ADDR; i += READ_LINE_WIDTH){
     sprintf(addressCode, "0x%04X   ", i);
     Serial.print(addressCode);
-    for (int j = 0; j < lineSize; j++){
+
+    for (int j = 0; j < READ_LINE_WIDTH; j++){
       sprintf(hexByte, "%02X  ", read(i+j));
       Serial.print(hexByte);
     }
+    
     Serial.print("\n");
   }
 }
 
 void setup() {
 
-  /* ensure the EEPROM is in read mode before pinMode assignment
+  /* Ensure the EEPROM is in read mode before pinMode assignment
      so that we don't accidentally write bits */
   digitalWrite(OE, LOW);
   digitalWrite(WE, HIGH);
 
-  // outputs
+  // Outputs
   pinMode(SERIALOUT, OUTPUT);
   pinMode(SRCLK, OUTPUT);
   pinMode(RCLK, OUTPUT);
   pinMode(OE, OUTPUT);
   pinMode(WE, OUTPUT);
 
-  // inputs
+  // Inputs
   pinMode(WRITE_BUTTON, INPUT);
   pinMode(READ_BUTTON, INPUT);
 
@@ -140,16 +151,20 @@ void loop() {
     printAll();
   }
 
-  if (digitalRead(WRITE_BUTTON) & flag){
+  if (digitalRead(WRITE_BUTTON)){
     Serial.println("WRITING EEPROM...");
-    for (long i = 0; i <= MAX_ADDR; i++){
-      write(i, 0x00);
-      if (i%1024 == 0){
-        Serial.print("#");
-      }
+
+    // Program user defined data
+    for (long i = 0; i < sizeof(DATA); i++)
+    {
+      write(i, DATA[i]);
+    }
+    
+    // Program any leftover space with user specified DEFAULT_VALUE
+    for (long i = sizeof(DATA) - 1; i <= MAX_ADDR; i++){
+      write(i, DEFAULT_VALUE);
     }
     Serial.println("WRITE COMPLETE");
-    flag = false;
 
   }
 
