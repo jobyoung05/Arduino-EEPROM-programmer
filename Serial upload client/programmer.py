@@ -18,7 +18,7 @@ class FileTypeError(Exception):
 def help():
     """Called when the user runs 'python programmer.py help'
     """
-    print("help function here")
+    print("help function still to be written")
 
 
 def readBinary(fileName):
@@ -81,7 +81,7 @@ def openCOMPort(portName):
         portName (str): the name of the COM port (will be "COM" followed by a number)
 
     Returns:
-        _type_: _description_
+        serial.Serial: the serial port connection object from pySerial
     """
     try:
         arduino = serial.Serial(port='COM5',  baudrate=115200, timeout=.5)
@@ -94,6 +94,15 @@ def openCOMPort(portName):
 
 
 def establishConnection():
+    """Establish the connection with the arduino by sending a byte and waiting for a response.
+
+    Raises:
+        TimeoutError: if there is no response from the arduino in the given time limit
+        ValueError: if the arduino responds incorrectly
+
+    Returns:
+        bool: true if the connection was successful, false if not
+    """
     arduino = serial.Serial(port='COM5',  baudrate=115200, timeout=.5)
     time.sleep(.05)
     arduino.write(bytes([255]))
