@@ -3,7 +3,8 @@
  
  This project (including code and schematic) is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 ## Wiring
-![Arduino EEPROM Programmer Schematic](https://github.com/user-attachments/assets/4357a42c-eaa6-497b-863d-a2148017b4af)
+![Arduino EEPROM Programmer Schematic](https://github.com/user-attachments/assets/58439acd-4d0e-4afe-8e68-a65465fd0445)
+
 
 This is how I wired the Arduino up with the shift registers and the EEPROM chip. It looks very confusing but most of that is just the data and address buses, which follow a very logical pin mapping. I've explained these in writing which is probably easier to understand than the schematic:
  * Pins D2-D9 of the Arduino are connected to pins IO0-IO7 of the EEPROM
